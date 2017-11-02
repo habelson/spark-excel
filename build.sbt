@@ -2,13 +2,13 @@ name := "spark-excel"
 
 organization := "com.crealytics"
 
-crossScalaVersions := Seq("2.11.11", "2.10.6")
+crossScalaVersions := Seq("2.10.6", "2.11.11", "2.10.6")
 
 scalaVersion := crossScalaVersions.value.head
 
 spName := "crealytics/spark-excel"
 
-sparkVersion := "2.2.0"
+sparkVersion := "1.6.2"
 
 val testSparkVersion = settingKey[String]("The version of Spark to test against.")
 
@@ -26,7 +26,6 @@ libraryDependencies ++= Seq(
   "org.scalacheck" %% "scalacheck" % "1.13.4" % Test,
   "com.github.alexarchambault" %% "scalacheck-shapeless_1.13" % "1.1.6" % Test,
   "com.holdenkarau" %% "spark-testing-base" % s"${testSparkVersion.value}_0.7.4" % Test,
-  "com.norbitltd" %% "spoiwo" % "1.2.0" % Test,
   "org.scalamock" %% "scalamock-scalatest-support" % "3.5.0" % Test
 )
 

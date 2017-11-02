@@ -87,8 +87,28 @@ extends BaseRelation with TableScan with PrunedScan {
       return null
     }
     val dataFormatter = new DataFormatter()
-    lazy val stringValue = dataFormatter.formatCellValue(cell)
-    lazy val numericValue = cell.getNumericCellValue
+    lazy val stringValue =
+      cell.getCellTypeEnum match {
+        case CellType.FORMULA =>
+          cell.getCachedFormulaResultTypeEnum match {
+            case CellType.STRING => cell.getRichStringCellValue.getString
+            case CellType.NUMERIC => cell.getNumericCellValue.toString
+            case _ => dataFormatter.formatCellValue(cell)
+        }
+        case _ => dataFormatter.formatCellValue(cell)
+    }
+    lazy val numericValue = 
+      cell.getCellTypeEnum match {
+      case CellType.NUMERIC => cell.getNumericCellValue
+      case CellType.STRING if cell.getStringCellValue != "" => cell.getStringCellValue.toDouble
+      case CellType.STRING => Double.NaN
+      case CellType.FORMULA =>
+        cell.getCachedFormulaResultTypeEnum match {
+          case CellType.NUMERIC => cell.getNumericCellValue
+          case CellType.STRING if cell.getRichStringCellValue.getString != "" => cell.getRichStringCellValue.getString.toDouble
+          case CellType.STRING => Double.NaN
+        }
+    }
     lazy val bigDecimal = new BigDecimal(stringValue.replaceAll(",", ""))
     castType match {
       case _: ByteType => numericValue.toByte
